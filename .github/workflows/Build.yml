@@ -51,6 +51,7 @@ jobs:
 
       - name: Build Media3 FFmpeg JNI
         run: |
+          sudo apt-get install ninja-build -y
           FFMPEG_MODULE_PATH="$GITHUB_WORKSPACE"/media/libraries/decoder_ffmpeg/src/main
           NDK_PATH="$GITHUB_WORKSPACE"/android-ndk-${{ github.event.inputs.ANDROID_NDK }}
           HOST_PLATFORM="linux-x86_64"
