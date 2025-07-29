@@ -62,8 +62,7 @@ jobs:
             --disable-w32threads \
             --disable-os2threads \
             --disable-debug \
-            --disable-stripping \
-            --enable-decoder="${ENABLED_DECODERS[@]}"
+            --disable-stripping
           
           # 开始编译
           make -j$(nproc)
