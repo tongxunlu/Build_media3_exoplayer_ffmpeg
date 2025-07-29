@@ -41,7 +41,7 @@ jobs:
           cd ffmpeg
           # 确保脚本可执行
           chmod +x ffbuild/pkgconfig_generate.sh
-          
+          chmod +x compat/windows/makedef
           # 设置编译参数
           ENABLED_DECODERS=(${{ github.event.inputs.ENABLED_DECODERS }})
           
