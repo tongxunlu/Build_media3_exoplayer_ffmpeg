@@ -39,6 +39,8 @@ jobs:
       - name: 编译 Windows 版 FFmpeg
         run: |
           cd ffmpeg
+          # 确保脚本可执行
+          chmod +x ffbuild/pkgconfig_generate.sh
           
           # 设置编译参数
           ENABLED_DECODERS=(${{ github.event.inputs.ENABLED_DECODERS }})
