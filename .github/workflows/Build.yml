@@ -53,8 +53,7 @@ jobs:
             --prefix=./build \
             --enable-shared \
             --enable-static \
-            --enable-version3 \
-            --enable-programs
+            --enable-version3
           
           # 开始编译
           make -j$(nproc)
