@@ -51,8 +51,8 @@ jobs:
             --target-os=mingw32 \
             --cross-prefix=x86_64-w64-mingw32- \
             --prefix=./build \
-            --enable-shared \
             --enable-static \
+            --disable-shared \
             --enable-version3
           
           # 开始编译
