@@ -35,13 +35,16 @@ jobs:
           git checkout ${{ github.event.inputs.FFMPEG_RELEASE_BRANCH }}
           chmod +x configure
 
-      - name: 安装 dlfcn-win32
+      - name: 手动安装 dlfcn-win32
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-          gcc-mingw-w64-x86-64 \
-          g++-mingw-w64-x86-64 \
-          dlfcn-win32-mingw-w64-dev
+          sudo apt-get install -y git build-essential mingw-w64
+          git clone https://github.com/dlfcn-win32/dlfcn-win32.git
+          cd dlfcn-win32
+          make -f Makefile.mingw
+          sudo mkdir -p /usr/x86_64-w64-mingw32/include/
+          sudo mkdir -p /usr/x86_64-w64-mingw32/lib/
+          sudo cp include/dlfcn.h /usr/x86_64-w64-mingw32/include/
+          sudo cp libdl.a /usr/x86_64-w64-mingw32/lib/
 
       # 第四步：配置和编译 FFmpeg
       - name: 编译 Windows 版 FFmpeg
