@@ -35,6 +35,14 @@ jobs:
           git checkout ${{ github.event.inputs.FFMPEG_RELEASE_BRANCH }}
           chmod +x configure
 
+      - name: 安装 dlfcn-win32
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+          gcc-mingw-w64-x86-64 \
+          g++-mingw-w64-x86-64 \
+          dlfcn-win32-mingw-w64-dev
+
       # 第四步：配置和编译 FFmpeg
       - name: 编译 Windows 版 FFmpeg
         run: |
@@ -50,6 +58,8 @@ jobs:
             --arch=x86_64 \
             --target-os=mingw32 \
             --cross-prefix=x86_64-w64-mingw32- \
+            --extra-cflags="-I/usr/x86_64-w64-mingw32/include" \
+            --extra-ldflags="-L/usr/x86_64-w64-mingw32/lib -ldl" \
             --prefix=./build \
             --enable-libarcdav3a\
             --enable-static \
