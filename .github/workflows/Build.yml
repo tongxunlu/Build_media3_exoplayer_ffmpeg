@@ -1,4 +1,4 @@
-name: 构建Windows版FFmpeg
+name: 构建 Windows 版 FFmpeg (AV3A版本)
 
 on:
   workflow_dispatch:
@@ -13,7 +13,7 @@ on:
         default: 'main'
 
 jobs:
-  build_Windows_FFmpeg:
+  build_Windows_FFmpeg2:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,12 +27,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential mingw-w64 nasm pkg-config
 
-      # 第三步：克隆 FFmpeg 源代码
-      - name: 获取 FFmpeg 源代码
+      # 第三步：克隆特定版本的 FFmpeg 源代码
+      - name: 获取 FFmpeg-AV3A 源代码
         run: |
-          git clone https://github.com/FFmpeg/FFmpeg.git ffmpeg
+          git clone https://github.com/WoKee/ffmpeg-av3a.git ffmpeg
           cd ffmpeg
           git checkout ${{ github.event.inputs.FFMPEG_RELEASE_BRANCH }}
+          chmod +x configure
 
       # 第四步：配置和编译 FFmpeg
       - name: 编译 Windows 版 FFmpeg
@@ -54,7 +55,6 @@ jobs:
             --enable-gpl \
             --enable-nonfree \
             --disable-doc \
-            --disable-programs \
             --disable-avdevice \
             --disable-postproc \
             --disable-avfilter \
@@ -81,5 +81,5 @@ jobs:
       - name: 上传 FFmpeg 可执行文件
         uses: actions/upload-artifact@v4
         with:
-          name: FFmpeg-Windows
+          name: FFmpeg-Windows-AV3A
           path: ffmpeg/build/bin/ffmpeg-windows.zip
