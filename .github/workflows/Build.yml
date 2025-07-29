@@ -54,17 +54,7 @@ jobs:
             --enable-shared \
             --enable-static \
             --enable-version3 \
-            --enable-gpl \
-            --enable-nonfree \
-            --disable-doc \
-            --disable-avdevice \
-            --disable-postproc \
-            --disable-avfilter \
-            --disable-pthreads \
-            --disable-w32threads \
-            --disable-os2threads \
-            --disable-debug \
-            --disable-stripping
+            --enable-programs
           
           # 开始编译
           make -j$(nproc)
