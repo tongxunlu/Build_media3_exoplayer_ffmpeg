@@ -35,11 +35,12 @@ jobs:
           git checkout ${{ github.event.inputs.FFMPEG_RELEASE_BRANCH }}
           chmod +x configure
 
-      - name: 手动安装 dlfcn-win32
+      - name: 安装 dlfcn-win32 (MinGW)
         run: |
           sudo apt-get install -y git build-essential mingw-w64
           git clone https://github.com/dlfcn-win32/dlfcn-win32.git
           cd dlfcn-win32
+          git checkout mingw  # 或手动创建 Makefile.mingw
           make -f Makefile.mingw
           sudo mkdir -p /usr/x86_64-w64-mingw32/include/
           sudo mkdir -p /usr/x86_64-w64-mingw32/lib/
