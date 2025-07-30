@@ -1,1 +1,82 @@
+name: Build Static FFmpeg (Ubuntu with AV3A)
 
+on:
+  workflow_dispatch:
+    inputs:
+      ENABLED_DECODERS:
+        description: "Enabled decoders (space-separated)"
+        required: false
+        default: "vorbis opus flac alac pcm_mulaw pcm_alaw mp3 amrnb amrwb aac ac3 eac3 dca mlp truehd libarcdav3a"
+
+jobs:
+  build-ffmpeg:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            nasm \
+            yasm \
+            pkg-config \
+            libx264-dev \
+            libmp3lame-dev \
+            libvorbis-dev \
+            libopus-dev \
+            libfdk-aac-dev \
+            libdav1d-dev \
+            git
+
+      - name: Clone FFmpeg with AV3A support
+        run: |
+          git clone --depth 1 --branch av3a_support_branch https://github.com/WoKee/ffmpeg-av3a.git ffmpeg
+          cd ffmpeg
+
+      - name: Build static FFmpeg (single binary)
+        run: |
+          cd ffmpeg
+          ./configure \
+            --prefix=./build \
+            --enable-static \
+            --disable-shared \
+            --extra-cflags="-static" \
+            --extra-libs="-static -lpthread -lm" \
+            --enable-gpl \
+            --enable-nonfree \
+            --enable-libx264 \
+            --enable-libmp3lame \
+            --enable-libvorbis \
+            --enable-libopus \
+            --enable-libfdk-aac \
+            --enable-decoder=libarcdav3a \
+
+
+          # 编译单文件版本
+          make -j$(nproc)
+          make install
+
+          # 手动构建单文件 ffmpeg（合并所有静态库）
+          x86_64-linux-gnu-gcc \
+            -o build/bin/ffmpeg \
+            fftools/ffmpeg.c \
+            -Wl,-Bstatic \
+            -lavcodec -lavformat -lavutil -lswresample -lswscale \
+            -lx264 -lmp3lame -lvorbis -lvorbisenc -logg -lopus -lfdk-aac \
+            -Wl,-Bdynamic -lpthread -ldl -lm
+
+      - name: Verify single binary
+        run: |
+          cd ffmpeg/build/bin
+          ./ffmpeg -version
+          ./ffmpeg -decoders | grep av3a
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-static-ubuntu
+          path: ffmpeg/build/bin/ffmpeg
