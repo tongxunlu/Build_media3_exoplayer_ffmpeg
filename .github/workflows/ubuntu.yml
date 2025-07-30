@@ -51,6 +51,12 @@ jobs:
         run: |
           git clone https://github.com/WoKee/ffmpeg-av3a.git ffmpeg-av3a
           cd ffmpeg-av3a
+
+          # Build AV3A static library first
+          cd libavcodec
+          gcc -c -fPIC libarcdav3a.c -o libarcdav3a.o
+          ar rcs libarcdav3a.a libarcdav3a.o
+          cd ..
           
           # Ensure configure script is executable
           chmod +x configure
