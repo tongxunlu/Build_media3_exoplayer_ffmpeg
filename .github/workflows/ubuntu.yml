@@ -53,11 +53,19 @@ jobs:
           cd ffmpeg-av3a
 
           # Build AV3A static library first
+          #cd libavcodec
+          #gcc -c -fPIC libarcdav3a.c -o libarcdav3a.o
+          #ar rcs libarcdav3a.a libarcdav3a.o
+          #cd "$GITHUB_WORKSPACE"
+          #cd ffmpeg-av3a
+
+          # 构建AV3A静态库（指定当前目录为头文件搜索路径）
           cd libavcodec
-          gcc -c -fPIC libarcdav3a.c -o libarcdav3a.o
+          gcc -c -fPIC libarcdav3a.c -o libarcdav3a.o \
+              -I.. -I../libavutil
           ar rcs libarcdav3a.a libarcdav3a.o
-          cd "$GITHUB_WORKSPACE"
-          cd ffmpeg-av3a
+          cd ..
+          
           
           # Ensure configure script is executable
           chmod +x configure
@@ -80,8 +88,8 @@ jobs:
             --disable-ffplay \
             --enable-decoder=${{ github.event.inputs.ENABLED_DECODERS }} \
             --enable-libarcdav3a \
+            --extra-ldflags="-L$PWD/libavcodec -larcdav3a"
             --extra-cflags="-fPIC" \
-            --extra-ldflags="-L$GITHUB_WORKSPACE/ffmpeg-av3a/libavcodec -lav3a" \
             --prefix="$GITHUB_WORKSPACE/ffmpeg-build"
 
 
