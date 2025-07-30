@@ -98,10 +98,10 @@ jobs:
             --disable-shared \
             --disable-ffplay \
             --enable-decoder=${{ github.event.inputs.ENABLED_DECODERS }} \
-            --enable-libarcdav3a \
+            --enable-libarcdav3a 
             #--extra-ldflags="-L$PWD/libavcodec -larcdav3a"
             #--extra-cflags="-fPIC" \
-            --prefix="$GITHUB_WORKSPACE/ffmpeg-build"
+            # --prefix="$GITHUB_WORKSPACE/ffmpeg-build"
 
 
           make -j$(nproc)
@@ -109,13 +109,13 @@ jobs:
 
 
           # Create a single binary with all static libraries
-          gcc -o ffmpeg_av3a \
-            -Wl,-Bsymbolic \
-            -Wl,--whole-archive \
-            "$GITHUB_WORKSPACE/ffmpeg-build/lib/libavcodec.a" \
-            "$GITHUB_WORKSPACE/ffmpeg-build/lib/libavutil.a" \
-            -Wl,--no-whole-archive \
-            -lm -lz -lpthread
+          # gcc -o ffmpeg_av3a \
+          #   -Wl,-Bsymbolic \
+          #   -Wl,--whole-archive \
+          #   "$GITHUB_WORKSPACE/ffmpeg-build/lib/libavcodec.a" \
+          #   "$GITHUB_WORKSPACE/ffmpeg-build/lib/libavutil.a" \
+          #   -Wl,--no-whole-archive \
+          #   -lm -lz -lpthread
 
 
           # Make the final binary executable
@@ -128,5 +128,5 @@ jobs:
           name: ffmpeg-av3a-ubuntu
           path: |
             $GITHUB_WORKSPACE/ffmpeg-av3a/ffmpeg_av3a
-            $GITHUB_WORKSPACE/ffmpeg-build/include/libavcodec/avcodec.h
-            $GITHUB_WORKSPACE/ffmpeg-build/include/libavutil/avutil.h
+            # $GITHUB_WORKSPACE/ffmpeg-build/include/libavcodec/avcodec.h
+            # $GITHUB_WORKSPACE/ffmpeg-build/include/libavutil/avutil.h
