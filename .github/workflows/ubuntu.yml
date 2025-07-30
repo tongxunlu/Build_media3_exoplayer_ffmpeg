@@ -6,7 +6,7 @@ on:
       ENABLED_DECODERS:
         description: "ENABLED_DECODERS"
         required: true
-        default: 'vorbis opus flac alac pcm_mulaw pcm_alaw mp3 amrnb amrwb aac ac3 eac3 dca mlp truehd libarcdav3a'
+        default: 'vorbis flac alac pcm_mulaw pcm_alaw mp3 amrnb amrwb aac ac3 eac3 dca mlp truehd libarcdav3a'
       FFMPEG_RELEASE_BRANCH:
         description: "FFMPEG_RELEASE_BRANCH"
         required: true
