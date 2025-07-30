@@ -72,11 +72,11 @@ jobs:
           #cd ffmpeg-av3a
 
           # 构建AV3A静态库（指定当前目录为头文件搜索路径）
-          cd libavcodec
-          gcc -c -fPIC libarcdav3a.c -o libarcdav3a.o \
-              -I.. -I../libavutil
-          ar rcs libarcdav3a.a libarcdav3a.o
-          cd ..
+          # cd libavcodec
+          # gcc -c -fPIC libarcdav3a.c -o libarcdav3a.o \
+          #     -I.. -I../libavutil
+          # ar rcs libarcdav3a.a libarcdav3a.o
+          # cd ..
           
           
          
