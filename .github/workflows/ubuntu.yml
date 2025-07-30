@@ -52,6 +52,14 @@ jobs:
           git clone https://github.com/WoKee/ffmpeg-av3a.git ffmpeg-av3a
           cd ffmpeg-av3a
 
+
+          # 生成配置头文件
+            ./configure --disable-everything --enable-avutil
+            make libavutil/avconfig.h
+      
+           
+
+
           # Build AV3A static library first
           #cd libavcodec
           #gcc -c -fPIC libarcdav3a.c -o libarcdav3a.o
