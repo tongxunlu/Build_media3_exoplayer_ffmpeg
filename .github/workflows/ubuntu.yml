@@ -1,79 +1,92 @@
-name: Build Static FFmpeg (Ubuntu with AV3A)
+name: Build FFmpeg for Ubuntu with AV3A support
 
 on:
   workflow_dispatch:
     inputs:
       ENABLED_DECODERS:
-        description: "Enabled decoders (space-separated)"
-        required: false
-        default: "vorbis opus flac alac pcm_mulaw pcm_alaw mp3 amrnb amrwb aac ac3 eac3 dca mlp truehd libarcdav3a"
+        description: "ENABLED_DECODERS"
+        required: true
+        default: 'vorbis opus flac alac pcm_mulaw pcm_alaw mp3 amrnb amrwb aac ac3 eac3 dca mlp truehd libarcdav3a'
+      FFMPEG_RELEASE_BRANCH:
+        description: "FFMPEG_RELEASE_BRANCH"
+        required: true
+        default: 'main'
 
 jobs:
-  build-ffmpeg:
+  Build-FFmpeg-Ubuntu:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             build-essential \
-            nasm \
-            yasm \
+            autoconf \
+            automake \
+            libtool \
             pkg-config \
-            libx264-dev \
-            libmp3lame-dev \
+            yasm \
+            cmake \
+            git \
+            libfreetype6-dev \
+            libsdl2-dev \
+            libva-dev \
+            libvdpau-dev \
             libvorbis-dev \
-            libopus-dev \
-            libfdk-aac-dev \
-            libdav1d-dev \
-            git
-          sudo apt-get install -y build-essential gcc make pkg-config
+            libxcb1-dev \
+            libxcb-shm0-dev \
+            libxcb-xfixes0-dev \
+            zlib1g-dev
 
-      - name: Clone FFmpeg with AV3A support
+      - name: Build FFmpeg with AV3A support
         run: |
-          git clone https://github.com/WoKee/ffmpeg-av3a.git ffmpeg
-          cd ffmpeg
-
-      - name: Build static FFmpeg (single binary)
-        run: |
-          cd ffmpeg
-            make distclean
-            chmod +x configure ffbuild/pkgconfig_generate.sh
+          git clone https://github.com/WoKee/ffmpeg-av3a.git ffmpeg-av3a
+          cd ffmpeg-av3a
+          
+          # Ensure configure script is executable
+          chmod +x configure
+          
+          # Check if any other scripts need execution permissions
+          chmod +x ffbuild/pkgconfig_generate.sh
+          if [ -f "version.sh" ]; then
+            chmod +x version.sh
+          fi
+          
+          # Configure FFmpeg with minimal options for Ubuntu
           ./configure \
-            --prefix=./build \
+            --enable-gpl \
+            --enable-version3 \
             --enable-static \
             --disable-shared \
-            --extra-cflags="-I$(pwd)/libavcodec" \
-            --extra-ldflags="-L$(pwd)/libavcodec -l:libarcdav3a.a" \
-            --enable-decoder=libarcdav3a \
-            --enable-gpl
+            --enable-decoder=${{ github.event.inputs.ENABLED_DECODERS }} \
+            --enable-libarcdav3a \
+            --extra-cflags="-fPIC" \
+            --prefix="$GITHUB_WORKSPACE/ffmpeg-build"
 
-
-          # 编译单文件版本
           make -j$(nproc)
           make install
 
-          # 手动构建单文件 ffmpeg（合并所有静态库）
-          x86_64-linux-gnu-gcc \
-            -o build/bin/ffmpeg \
-            fftools/ffmpeg.c \
-            -Wl,-Bstatic \
-            -lavcodec -lavformat -lavutil -lswresample -lswscale \
-            -lx264 -lmp3lame -lvorbis -lvorbisenc -logg -lopus -lfdk-aac \
-            -Wl,-Bdynamic -lpthread -ldl -lm
+          # Create a single binary with all static libraries
+          gcc -o ffmpeg_av3a \
+            -Wl,-Bsymbolic \
+            -Wl,--whole-archive \
+            "$GITHUB_WORKSPACE/ffmpeg-build/lib/libavcodec.a" \
+            "$GITHUB_WORKSPACE/ffmpeg-build/lib/libavutil.a" \
+            -Wl,--no-whole-archive \
+            -lm -lz -lpthread
 
-      - name: Verify single binary
-        run: |
-          cd ffmpeg/build/bin
-          ./ffmpeg -version
-          ./ffmpeg -decoders | grep av3a
+          # Make the final binary executable
+          chmod +x ffmpeg_av3a
 
-      - name: Upload artifact
+      - name: Upload FFmpeg binary
         uses: actions/upload-artifact@v4
         with:
-          name: ffmpeg-static-ubuntu
-          path: ffmpeg/build/bin/ffmpeg
+          name: ffmpeg-av3a-ubuntu
+          path: |
+            $GITHUB_WORKSPACE/ffmpeg-av3a/ffmpeg_av3a
+            $GITHUB_WORKSPACE/ffmpeg-build/include/libavcodec/avcodec.h
+            $GITHUB_WORKSPACE/ffmpeg-build/include/libavutil/avutil.h
