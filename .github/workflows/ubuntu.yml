@@ -53,7 +53,11 @@ jobs:
           cd ffmpeg-av3a
 
 
+
+
+
           # 生成配置头文件
+            chmod +x configure
             ./configure --disable-everything --enable-avutil
             make libavutil/avconfig.h
       
@@ -75,8 +79,7 @@ jobs:
           cd ..
           
           
-          # Ensure configure script is executable
-          chmod +x configure
+         
           
           # Check if any other scripts need execution permissions
           chmod +x ffbuild/pkgconfig_generate.sh
