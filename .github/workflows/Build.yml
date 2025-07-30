@@ -17,6 +17,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: 修复 dlfcn-win32 编译
+        run: |
+          sudo apt-get install -y git build-essential mingw-w64
+          git clone https://github.com/dlfcn-win32/dlfcn-win32.git
+          cd dlfcn-win32
+      
+          # 生成正确的 Makefile.mingw（用 Tab 缩进）
+          cat > Makefile.mingw << 'EOF'
+          CC = x86_64-w64-mingw32-gcc
+          AR = x86_64-w64-mingw32-ar
+          CFLAGS = -I./include -Wall -O2
+          TARGET = libdl.a
+          SRC = src/dlfcn.c
+          OBJ = $(SRC:.c=.o)
+      
+          all: $(TARGET)
+      
+          $(TARGET): $(OBJ)
+          	$(AR) rcs $@ $^
+      
+          %.o: %.c
+          	$(CC) $(CFLAGS) -c $< -o $@
+      
+          install:
+          	mkdir -p /usr/x86_64-w64-mingw32/include/
+          	mkdir -p /usr/x86_64-w64-mingw32/lib/
+          	cp include/dlfcn.h /usr/x86_64-w64-mingw32/include/
+          	cp libdl.a /usr/x86_64-w64-mingw32/lib/
+      
+          clean:
+          	rm -f $(OBJ) $(TARGET)
+          EOF
+      
+          make -f Makefile.mingw
+          sudo make -f Makefile.mingw install
+        
       # 第一步：检出代码仓库
       - name: 检出仓库
         uses: actions/checkout@v4
@@ -35,38 +71,7 @@ jobs:
           git checkout ${{ github.event.inputs.FFMPEG_RELEASE_BRANCH }}
           chmod +x configure
 
-      - name: 手动编译 dlfcn-win32
-        run: |
-          sudo apt-get install -y git build-essential mingw-w64
-          git clone https://github.com/dlfcn-win32/dlfcn-win32.git
-          cd dlfcn-win32
-          cat > Makefile.mingw << 'EOF'
-          CC = x86_64-w64-mingw32-gcc
-          AR = x86_64-w64-mingw32-ar
-          CFLAGS = -I./include -Wall -O2
-          TARGET = libdl.a
-          SRC = src/dlfcn.c
-          OBJ = $(SRC:.c=.o)
       
-          all: $(TARGET)
-      
-          $(TARGET): $(OBJ)
-            $(AR) rcs $@ $^
-      
-          %.o: %.c
-            $(CC) $(CFLAGS) -c $< -o $@
-      
-          install:
-            mkdir -p /usr/x86_64-w64-mingw32/include/
-            mkdir -p /usr/x86_64-w64-mingw32/lib/
-            cp include/dlfcn.h /usr/x86_64-w64-mingw32/include/
-            cp libdl.a /usr/x86_64-w64-mingw32/lib/
-      
-          clean:
-            rm -f $(OBJ) $(TARGET)
-          EOF
-          make -f Makefile.mingw
-          sudo make -f Makefile.mingw install
 
       # 第四步：配置和编译 FFmpeg
       - name: 编译 Windows 版 FFmpeg
