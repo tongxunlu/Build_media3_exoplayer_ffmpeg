@@ -45,15 +45,8 @@ jobs:
             --prefix=./build \
             --enable-static \
             --disable-shared \
-            --extra-cflags="-static" \
-            --extra-libs="-static -lpthread -lm" \
             --enable-gpl \
             --enable-nonfree \
-            --enable-libx264 \
-            --enable-libmp3lame \
-            --enable-libvorbis \
-            --enable-libopus \
-            --enable-libfdk-aac \
             --enable-libarcdav3a \
             --enable-decoder=libarcdav3a
 
