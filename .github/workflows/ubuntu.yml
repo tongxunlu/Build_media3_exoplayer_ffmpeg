@@ -88,8 +88,8 @@ jobs:
             --disable-ffplay \
             --enable-decoder=${{ github.event.inputs.ENABLED_DECODERS }} \
             --enable-libarcdav3a \
-            --extra-ldflags="-L$PWD/libavcodec -larcdav3a"
-            --extra-cflags="-fPIC" \
+            #--extra-ldflags="-L$PWD/libavcodec -larcdav3a"
+            #--extra-cflags="-fPIC" \
             --prefix="$GITHUB_WORKSPACE/ffmpeg-build"
 
 
