@@ -34,7 +34,7 @@ jobs:
 
       - name: Clone FFmpeg with AV3A support
         run: |
-          git clone --depth 1 --branch av3a_support_branch https://github.com/WoKee/ffmpeg-av3a.git ffmpeg
+          git clone https://github.com/WoKee/ffmpeg-av3a.git ffmpeg
           cd ffmpeg
 
       - name: Build static FFmpeg (single binary)
