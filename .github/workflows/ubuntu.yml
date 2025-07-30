@@ -40,6 +40,7 @@ jobs:
       - name: Build static FFmpeg (single binary)
         run: |
           cd ffmpeg
+            chmod +x configure ffbuild/pkgconfig_generate.sh
           ./configure \
             --prefix=./build \
             --enable-static \
@@ -53,7 +54,8 @@ jobs:
             --enable-libvorbis \
             --enable-libopus \
             --enable-libfdk-aac \
-            --enable-decoder=libarcdav3a \
+            --enable-libarcdav3a \
+            --enable-decoder=libarcdav3a
 
 
           # 编译单文件版本
