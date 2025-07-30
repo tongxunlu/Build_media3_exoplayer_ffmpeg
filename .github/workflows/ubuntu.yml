@@ -56,7 +56,8 @@ jobs:
           cd libavcodec
           gcc -c -fPIC libarcdav3a.c -o libarcdav3a.o
           ar rcs libarcdav3a.a libarcdav3a.o
-          cd ..
+          cd "$GITHUB_WORKSPACE"
+          cd ffmpeg-av3a
           
           # Ensure configure script is executable
           chmod +x configure
