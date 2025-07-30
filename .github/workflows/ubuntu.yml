@@ -70,6 +70,7 @@ jobs:
             --enable-version3 \
             --enable-static \
             --disable-shared \
+            --disable-ffplay \
             --enable-decoder=${{ github.event.inputs.ENABLED_DECODERS }} \
             --enable-libarcdav3a \
             --extra-cflags="-fPIC" \
