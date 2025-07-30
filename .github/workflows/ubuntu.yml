@@ -45,10 +45,10 @@ jobs:
             --prefix=./build \
             --enable-static \
             --disable-shared \
-            --enable-gpl \
-            --enable-nonfree \
-            --enable-libarcdav3a \
-            --enable-decoder=libarcdav3a
+            --extra-cflags="-I$(pwd)/libavcodec" \
+            --extra-ldflags="-L$(pwd)/libavcodec -l:libarcdav3a.a" \
+            --enable-decoder=libarcdav3a \
+            --enable-gpl
 
 
           # 编译单文件版本
