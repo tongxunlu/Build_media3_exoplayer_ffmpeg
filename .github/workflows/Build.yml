@@ -35,10 +35,10 @@ jobs:
           all: $(TARGET)
       
           $(TARGET): $(OBJ)
-          	$(AR) rcs $@ $^
+            $(AR) rcs $@ $^
       
           %.o: %.c
-          	$(CC) $(CFLAGS) -c $< -o $@
+            $(CC) $(CFLAGS) -c $< -o $@
       
           install:
           	mkdir -p /usr/x86_64-w64-mingw32/include/
