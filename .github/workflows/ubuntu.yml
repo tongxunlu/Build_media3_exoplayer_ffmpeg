@@ -74,6 +74,7 @@ jobs:
             --enable-decoder=${{ github.event.inputs.ENABLED_DECODERS }} \
             --enable-libarcdav3a \
             --extra-cflags="-fPIC" \
+            --extra-ldflags="-L$GITHUB_WORKSPACE/ffmpeg-av3a/libavcodec -lav3a" \
             --prefix="$GITHUB_WORKSPACE/ffmpeg-build"
 
 
