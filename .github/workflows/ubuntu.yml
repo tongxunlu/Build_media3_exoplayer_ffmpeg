@@ -41,6 +41,7 @@ jobs:
       - name: Build static FFmpeg (single binary)
         run: |
           cd ffmpeg
+            make distclean
             chmod +x configure ffbuild/pkgconfig_generate.sh
           ./configure \
             --prefix=./build \
