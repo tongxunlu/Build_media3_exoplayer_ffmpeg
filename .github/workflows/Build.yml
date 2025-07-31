@@ -89,13 +89,12 @@ jobs:
             --arch=x86_64 \
             --target-os=mingw32 \
             --cross-prefix=x86_64-w64-mingw32- \
-            --extra-cflags="-I/usr/x86_64-w64-mingw32/include" \
-            --extra-ldflags="-L/usr/x86_64-w64-mingw32/lib -ldl" \
-            
+            # --extra-cflags="-I/usr/x86_64-w64-mingw32/include" \
+            # --extra-ldflags="-L/usr/x86_64-w64-mingw32/lib -ldl" \
+            --target-os=mingw32 \
+            --prefix=./build
             --enable-muxer=av3a \
             --enable-demuxer=av3a \
-            
-            --prefix=./build \
             #--enable-libarcdav3a\
             --enable-static \
             --disable-shared \
