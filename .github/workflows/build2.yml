@@ -58,7 +58,6 @@ jobs:
             --enable-static \
             --disable-shared \
             --enable-version3 \
-            --extra-cflags="-O2 -fno-strict-aliasing" \
             --extra-ldflags="-static"
           
           make -j$(nproc)
