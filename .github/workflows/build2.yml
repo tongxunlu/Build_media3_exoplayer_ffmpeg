@@ -58,7 +58,10 @@ jobs:
             --enable-static \
             --disable-shared \
             --enable-version3 \
-            --extra-ldflags="-static"
+            --disable-asm 
+            
+            
+            #--extra-ldflags="-static"
           
           make -j$(nproc)
           make install
