@@ -24,7 +24,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential mingw-w64 nasm pkg-config \
-                                gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64
+                                gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 \
+                                make automake autoconf libtool
 
       - name: 获取 FFmpeg-AV3A 源代码
         run: |
@@ -36,25 +37,30 @@ jobs:
           chmod a+x configure
           chmod a+x compat/windows/makedef
 
+      - name: 设置 pkg-config 环境
+        run: |
+          # 手动设置 mingw pkg-config 路径
+          echo "PKG_CONFIG_PATH=/usr/x86_64-w64-mingw32/lib/pkgconfig" >> $GITHUB_ENV
+          echo "PATH=$PATH:/usr/x86_64-w64-mingw32/bin" >> $GITHUB_ENV
+
       - name: 编译 Windows 版 FFmpeg
         run: |
           cd ffmpeg
           mkdir -p build
           
-          # 设置环境变量
-          export PKG_CONFIG_PATH=/usr/x86_64-w64-mingw32/lib/pkgconfig
-          
           ./configure \
             --arch=x86_64 \
             --target-os=mingw32 \
             --cross-prefix=x86_64-w64-mingw32- \
-            #--pkg-config=pkg-config \
             --prefix=$PWD/build \
             --enable-muxer=av3a \
             --enable-demuxer=av3a \
             --enable-static \
             --disable-shared \
-            --enable-version3
+            --enable-version3 \
+            --pkg-config=$(which pkg-config) \
+            --extra-cflags="-I/usr/x86_64-w64-mingw32/include" \
+            --extra-ldflags="-L/usr/x86_64-w64-mingw32/lib"
           
           make -j$(nproc)
           make install
