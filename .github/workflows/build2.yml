@@ -1,4 +1,4 @@
-name: 构建 Windows 版 FFmpeg (AV3A版本)-2025-07-31
+name: 构建 Windows 版 FFmpeg (AV3A版本)
 
 on:
   workflow_dispatch:
@@ -17,40 +17,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 第一步：检出代码仓库
       - name: 检出仓库
         uses: actions/checkout@v4
 
-      # 第二步：安装必要的编译工具链
       - name: 安装编译工具链
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential mingw-w64 nasm pkg-config
+          sudo apt-get install -y build-essential mingw-w64 nasm pkg-config \
+                                gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 \
+                                pkg-config-mingw-w64
 
-      # 第三步：克隆特定版本的 FFmpeg 源代码
       - name: 获取 FFmpeg-AV3A 源代码
         run: |
           git clone https://github.com/tongxunlu/ffmpeg-n4.4.2.git ffmpeg
           cd ffmpeg
           git checkout ${{ github.event.inputs.FFMPEG_RELEASE_BRANCH }}
-          chmod +x configure
+          # 修复权限问题
+          chmod -R a+x ffbuild/*.sh
+          chmod a+x configure
+          chmod a+x compat/windows/makedef
 
-      # 第四步：配置和编译 FFmpeg
       - name: 编译 Windows 版 FFmpeg
         run: |
           cd ffmpeg
-          # 确保脚本可执行
-          chmod +x ffbuild/pkgconfig_generate.sh
-          chmod +x compat/windows/makedef
-          
-          # 创建构建目录
           mkdir -p build
           
-          # 配置编译选项
+          # 设置环境变量
+          export PKG_CONFIG_PATH=/usr/x86_64-w64-mingw32/lib/pkgconfig
+          
           ./configure \
             --arch=x86_64 \
             --target-os=mingw32 \
             --cross-prefix=x86_64-w64-mingw32- \
+            --pkg-config=pkg-config \
             --prefix=$PWD/build \
             --enable-muxer=av3a \
             --enable-demuxer=av3a \
@@ -58,11 +57,9 @@ jobs:
             --disable-shared \
             --enable-version3
           
-          # 开始编译
           make -j$(nproc)
           make install
 
-      # 第五步：打包生成的可执行文件
       - name: 打包 FFmpeg
         run: |
           cd ffmpeg/build/bin
@@ -70,7 +67,6 @@ jobs:
           cp *.exe ffmpeg-windows/
           zip -r ffmpeg-windows.zip ffmpeg-windows
 
-      # 第六步：上传生成的压缩包
       - name: 上传 FFmpeg 可执行文件
         uses: actions/upload-artifact@v4
         with:
