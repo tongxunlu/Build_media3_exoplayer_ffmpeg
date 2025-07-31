@@ -66,7 +66,8 @@ jobs:
       # 第三步：克隆特定版本的 FFmpeg 源代码
       - name: 获取 FFmpeg-AV3A 源代码
         run: |
-          git clone https://github.com/WoKee/ffmpeg-av3a.git ffmpeg
+          #https://github.com/tongxunlu/ffmpeg-n4.4.2 https://github.com/WoKee/ffmpeg-av3a.git
+          git clone https://github.com/tongxunlu/ffmpeg-n4.4.2.git ffmpeg
           cd ffmpeg
           git checkout ${{ github.event.inputs.FFMPEG_RELEASE_BRANCH }}
           chmod +x configure
@@ -90,8 +91,12 @@ jobs:
             --cross-prefix=x86_64-w64-mingw32- \
             --extra-cflags="-I/usr/x86_64-w64-mingw32/include" \
             --extra-ldflags="-L/usr/x86_64-w64-mingw32/lib -ldl" \
+            
+            --enable-muxer=av3a \
+            --enable-demuxer=av3a \
+            
             --prefix=./build \
-            --enable-libarcdav3a\
+            #--enable-libarcdav3a\
             --enable-static \
             --disable-shared \
             --enable-version3
