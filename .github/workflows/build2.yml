@@ -56,8 +56,8 @@ jobs:
             --target-os=mingw32 \
             --cross-prefix=x86_64-w64-mingw32- \
             --prefix=$PWD/build \
-            --enable-muxer=av3a \
-            --enable-demuxer=av3a \
+            #--enable-muxer=av3a \
+            #--enable-demuxer=av3a \
             --enable-static \
             --disable-shared \
             --enable-version3 \
