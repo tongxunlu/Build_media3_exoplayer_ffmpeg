@@ -1,4 +1,4 @@
-name: Build Static FFmpeg for Windows
+name: Build Static FFmpeg for Windows-静态打包不要dll测试
 
 on:
   workflow_dispatch:
