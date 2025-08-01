@@ -77,11 +77,13 @@ jobs:
 
 
 
-      - name: Copy FFmpeg output + DLLs to workspace
+      - name: Copy FFmpeg .exe and required DLLs
         run: |
           mkdir -p $GITHUB_WORKSPACE/ffmpeg-bin
-          cp -r /mingw64/bin/ffmpeg.exe $GITHUB_WORKSPACE/ffmpeg-bin/
-          cp -r /mingw64/bin/*.dll $GITHUB_WORKSPACE/ffmpeg-bin/
+          # Copy compiled ffmpeg and ffprobe
+          cp -v $HOME/bin/ffmpeg.exe $HOME/bin/ffprobe.exe $GITHUB_WORKSPACE/ffmpeg-bin/
+          # Copy runtime DLLs from mingw64 bin path
+          cp -v /mingw64/bin/*.dll $GITHUB_WORKSPACE/ffmpeg-bin/
 
 
       - name: Compress FFmpeg build output (ZIP)
