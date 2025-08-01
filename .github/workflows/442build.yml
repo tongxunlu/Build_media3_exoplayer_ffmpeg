@@ -60,12 +60,13 @@ jobs:
             --disable-asm \
             --enable-gnutls \
             --enable-libfreetype \
-            #--enable-av3a  \
-            #--enable-libx265 \
-            --target-os=mingw32 \
             --arch=x86_64 \
             --disable-shared \
             --enable-static
+
+            #--enable-av3a  \
+            #--enable-libx265 \
+            #--target-os=mingw32 \
 
           make -j$(nproc)
           make install
