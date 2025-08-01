@@ -77,15 +77,18 @@ jobs:
 
 
 
-      - name: Copy FFmpeg output to workspace (for zipping)
+      - name: Copy FFmpeg output + DLLs to workspace
         run: |
-          cp -r $HOME/bin $GITHUB_WORKSPACE/ffmpeg-bin
+          mkdir -p $GITHUB_WORKSPACE/ffmpeg-bin
+          cp -r /mingw64/bin/ffmpeg.exe $GITHUB_WORKSPACE/ffmpeg-bin/
+          cp -r /mingw64/bin/*.dll $GITHUB_WORKSPACE/ffmpeg-bin/
 
 
       - name: Compress FFmpeg build output (ZIP)
         shell: powershell
         run: |
           Compress-Archive -Path "$env:GITHUB_WORKSPACE\ffmpeg-bin\*" -DestinationPath "$env:GITHUB_WORKSPACE\ffmpeg-windows.zip"
+
 
 
 
