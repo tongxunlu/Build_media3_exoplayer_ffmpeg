@@ -60,6 +60,7 @@ jobs:
             --disable-asm \
             --enable-gnutls \
             --enable-libfreetype \
+            --enable-libarcdav3a  \
             --enable-libx265 \
             --target-os=mingw32 \
             --arch=x86_64 \
