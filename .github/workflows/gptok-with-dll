@@ -1,0 +1,92 @@
+name: gptc测试第3版-Build FFmpeg for Windows--
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ffmpeg:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            base-devel
+            git
+            yasm
+            nasm
+            make
+            pkg-config
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-pkg-config
+            mingw-w64-x86_64-gnutls
+            mingw-w64-x86_64-freetype
+            mingw-w64-x86_64-libwinpthread-git
+            mingw-w64-x86_64-x265
+
+      - name: Clone FFmpeg
+        run: |
+          git clone https://github.com/WoKee/ffmpeg-av3a.git ffmpeg
+          cd ffmpeg
+          git checkout main
+
+      - name: Configure and build FFmpeg (static .exe)
+        run: |
+          export PATH="/mingw64/bin:$PATH"
+          mkdir -p $HOME/ffmpeg_build $HOME/bin
+          echo "HOME=$HOME" >> $GITHUB_ENV
+
+          
+
+          cd ffmpeg
+          ./configure \
+            --prefix=$HOME/ffmpeg_build \
+            --pkg-config-flags="--static" \
+            --extra-cflags="-I$HOME/ffmpeg_build/include -DX265_DEPTH=10" \
+            --extra-ldflags="-L$HOME/ffmpeg_build/lib" \
+            --extra-libs="-lpthread -lm" \
+            --bindir=$HOME/bin \
+            --enable-gpl \
+            --disable-doc \
+            --disable-asm \
+            --enable-gnutls \
+            --enable-libfreetype \
+            --enable-libx265 \
+            --target-os=mingw32 \
+            --arch=x86_64 \
+            --disable-shared \
+            --enable-static
+
+          make -j$(nproc)
+          make install
+
+      - name: List output
+        run: |
+          echo "Listing $HOME/bin:"
+          ls -lh $HOME/bin
+          file $HOME/bin/ffmpeg.exe || echo "ffmpeg.exe not found"
+
+      - name: Compress FFmpeg build output
+        run: |
+          7z a ffmpeg-windows.zip $HOME/bin/*
+
+      - name: Upload zipped FFmpeg build
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-windows-build
+          path: ffmpeg-windows.zip
+
+
+
+
+
+          
