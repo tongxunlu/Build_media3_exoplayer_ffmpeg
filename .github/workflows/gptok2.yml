@@ -1,0 +1,78 @@
+name: 已经可以打包,差dll问题Build Static FFmpeg for Windows
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        install: >
+          git
+          base-devel
+          mingw-w64-x86_64-toolchain
+          mingw-w64-x86_64-pkg-config
+          mingw-w64-x86_64-freetype-static
+          mingw-w64-x86_64-libmp3lame-static
+          mingw-w64-x86_64-libopus-static
+          mingw-w64-x86_64-fdk-aac-static
+          mingw-w64-x86_64-bzip2-static
+          mingw-w64-x86_64-x265-static
+          mingw-w64-x86_64-zlib-static
+          yasm
+        msystem: MINGW64
+
+    - name: Clone FFmpeg
+      shell: msys2 {0}
+      run: |
+        git clone --depth 1 https://git.ffmpeg.org/ffmpeg.git ffmpeg
+        cd ffmpeg
+        mkdir -p /home/runneradmin/bin
+
+    - name: Configure and Build FFmpeg (Static)
+      shell: msys2 {0}
+      run: |
+        cd ffmpeg
+        ./configure \
+          --prefix="$HOME/ffmpeg_build" \
+          --pkg-config-flags="--static" \
+          --extra-cflags="-I$HOME/ffmpeg_build/include -static" \
+          --extra-ldflags="-L$HOME/ffmpeg_build/lib -static" \
+          --extra-libs="-lpthread -lm" \
+          --ld="g++" \
+          --bindir="$HOME/bin" \
+          --disable-shared \
+          --enable-static \
+          --disable-doc \
+          --disable-ffplay \
+          --disable-ffprobe \
+          --disable-avdevice \
+          --disable-network \
+          --disable-debug \
+          --enable-gpl \
+          --enable-libx265 \
+          --enable-libfreetype \
+          --enable-libmp3lame \
+          --enable-libopus \
+          --enable-libfdk-aac \
+          --enable-zlib \
+          --enable-bzlib
+
+        make -j$(nproc)
+        make install
+
+    - name: Copy to workspace
+      shell: msys2 {0}
+      run: |
+        cp $HOME/bin/ffmpeg.exe $GITHUB_WORKSPACE/ffmpeg.exe
+
+    - name: Upload ffmpeg.exe
+      uses: actions/upload-artifact@v4
+      with:
+        name: ffmpeg-windows-static
+        path: ffmpeg.exe
