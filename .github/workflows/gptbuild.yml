@@ -24,11 +24,11 @@ jobs:
             git
             yasm
             nasm
-            pkg-config
-            gnutls
             make
-            mingw-w64-x86_64-gcc
+            pkg-config
+            mingw-w64-x86_64-toolchain
             mingw-w64-x86_64-pkg-config
+            mingw-w64-x86_64-gnutls
             mingw-w64-x86_64-freetype
             mingw-w64-x86_64-libwinpthread-git
             mingw-w64-x86_64-x265
