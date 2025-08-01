@@ -1,4 +1,4 @@
-name: Build Static FFmpeg for Windows
+name: 已经可以打包,差dll问题Build Static FFmpeg for Windows
 
 on:
   workflow_dispatch:
