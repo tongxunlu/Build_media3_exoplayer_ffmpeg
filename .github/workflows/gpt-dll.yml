@@ -75,12 +75,20 @@ jobs:
           ls -lh $HOME/bin
           file $HOME/bin/ffmpeg.exe || echo "ffmpeg.exe not found"
 
+
+
+      - name: Copy FFmpeg output to workspace (for zipping)
+        run: |
+          cp -r $HOME/bin $GITHUB_WORKSPACE/ffmpeg-bin
+
+
       - name: Compress FFmpeg build output (ZIP)
         shell: powershell
         run: |
-          $source = "$env:USERPROFILE\bin"
-          $dest = "$env:GITHUB_WORKSPACE\ffmpeg-windows.zip"
-          Compress-Archive -Path "$source\*" -DestinationPath $dest
+          Compress-Archive -Path "$env:GITHUB_WORKSPACE\ffmpeg-bin\*" -DestinationPath "$env:GITHUB_WORKSPACE\ffmpeg-windows.zip"
+
+
+
 
       - name: Upload zipped FFmpeg build
         uses: actions/upload-artifact@v4
