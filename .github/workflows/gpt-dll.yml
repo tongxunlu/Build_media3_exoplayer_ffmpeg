@@ -35,7 +35,9 @@ jobs:
 
       - name: Clone FFmpeg
         run: |
-          git clone https://github.com/WoKee/ffmpeg-av3a.git ffmpeg
+          #git clone https://github.com/WoKee/ffmpeg-av3a.git ffmpeg
+          git clone https://github.com/tongxunlu/ffmpeg-av3a.git ffmpeg
+          
           cd ffmpeg
           git checkout main
 
