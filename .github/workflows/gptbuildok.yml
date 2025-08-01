@@ -75,11 +75,15 @@ jobs:
           ls -lh $HOME/bin
           file $HOME/bin/ffmpeg.exe || echo "ffmpeg.exe not found"
 
+      - name: Copy ffmpeg.exe to workspace
+        run: |
+          cp $HOME/bin/ffmpeg.exe $GITHUB_WORKSPACE/ffmpeg.exe
+
       - name: Upload ffmpeg.exe
         uses: actions/upload-artifact@v4
         with:
           name: ffmpeg-windows
-          path: ${{ env.HOME }}/bin/ffmpeg.exe
+          path: ffmpeg.exe
 
 
 
