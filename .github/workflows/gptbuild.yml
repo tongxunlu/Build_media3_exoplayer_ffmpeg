@@ -1,4 +1,4 @@
-name: Build FFmpeg for Windows
+name: Build FFmpeg for Windows--gptc测试第一版
 
 on:
   workflow_dispatch:
@@ -53,6 +53,7 @@ jobs:
             --extra-libs="-lpthread -lm" \
             --bindir=$HOME/bin \
             --enable-gpl \
+            --disable-doc \
             --disable-asm \
             --enable-gnutls \
             --enable-libfreetype \
