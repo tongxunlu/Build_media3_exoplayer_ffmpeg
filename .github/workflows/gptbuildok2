@@ -57,9 +57,6 @@ jobs:
           --enable-gpl \
           --enable-libx265 \
           --enable-libfreetype \
-          --enable-libmp3lame \
-          --enable-libopus \
-          --enable-libfdk-aac \
           --enable-zlib \
           --enable-bzlib
 
