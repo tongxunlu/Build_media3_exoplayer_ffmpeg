@@ -1,4 +1,4 @@
-name: Build FFmpeg for Windows--gptc测试第2版
+name: 2025-08-15-Build FFmpeg for Windows--gptc测试第2版
 
 on:
   workflow_dispatch:
@@ -64,6 +64,7 @@ jobs:
             --target-os=mingw32 \
             --arch=x86_64 \
             --disable-shared \
+            --enable-libarcdav3 \
             --enable-static
 
           make -j$(nproc)
