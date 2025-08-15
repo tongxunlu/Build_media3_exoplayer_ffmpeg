@@ -62,8 +62,8 @@ jobs:
             --enable-libfreetype \
             --arch=x86_64 \
             --disable-shared \
-            --enable-static \
-            --enable-av3a  
+            --enable-static 
+            #--enable-av3a  
             #--enable-libx265 \
             #--target-os=mingw32 \
 
