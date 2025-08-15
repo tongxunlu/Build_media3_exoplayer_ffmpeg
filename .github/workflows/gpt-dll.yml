@@ -1,4 +1,4 @@
-name: gptc测试第3版-Build FFmpeg for Windows--
+name: 20250815-ffmpeg6.1gptc测试第3版-Build FFmpeg for Windows--
 
 on:
   workflow_dispatch:
