@@ -64,7 +64,8 @@ jobs:
             --target-os=mingw32 \
             --arch=x86_64 \
             --disable-shared \
-            --enable-libarcdav3 \
+            --enable-libarcdav3a \
+            --enable-libarcdavs3 \
             --enable-static
 
           make -j$(nproc)
