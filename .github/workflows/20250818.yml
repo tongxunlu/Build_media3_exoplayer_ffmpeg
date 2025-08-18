@@ -39,15 +39,6 @@ jobs:
           cd ffmpeg
           git checkout master
 
-      - name: Configure and build FFmpeg (static .exe)
-        run: |
-          export PATH="/mingw64/bin:$PATH"
-          mkdir -p $HOME/ffmpeg_build $HOME/bin
-          echo "HOME=$HOME" >> $GITHUB_ENV
-
-          
-
-          cd ffmpeg
           ./configure \
             --extra-libs="-lpthread -lm -ldhfilter -luavs3d -lavs3a"  \
            --extra-ldflags=' -L /d/avs3a/ffmpeg/lib/ --static'  \
