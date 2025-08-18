@@ -1,0 +1,93 @@
+name: 2025-08-18-其他版本
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ffmpeg:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            base-devel
+            git
+            yasm
+            nasm
+            make
+            pkg-config
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-pkg-config
+            mingw-w64-x86_64-gnutls
+            mingw-w64-x86_64-freetype
+            mingw-w64-x86_64-libwinpthread-git
+            mingw-w64-x86_64-x265
+
+      - name: Clone FFmpeg
+        run: |
+          # git clone https://github.com/WoKee/ffmpeg-av3a.git ffmpeg
+          git clone https://github.com/nicaicaii/ffmpeg-6.1.git ffmpeg
+          cd ffmpeg
+          git checkout main
+
+      - name: Configure and build FFmpeg (static .exe)
+        run: |
+          export PATH="/mingw64/bin:$PATH"
+          mkdir -p $HOME/ffmpeg_build $HOME/bin
+          echo "HOME=$HOME" >> $GITHUB_ENV
+
+          
+
+          cd ffmpeg
+          ./configure \
+            --extra-libs="-lpthread -lm -ldhfilter -luavs3d -lavs3a"  \
+           --extra-ldflags=' -L /d/avs3a/ffmpeg/lib/ --static'  \
+            --enable-cross-compile \
+           --enable-gpl  \
+           --enable-libarcdav3a \
+           --enable-libuavs3d  \
+           --enable-static \
+           --disable-optimizations \
+           --disable-asm \
+           --disable-stripping \
+           --enable-nonfree \
+           --disable-ffplay \
+           --disable-ffprobe \
+           --disable-doc \
+           --extra-cflags=' -I /d/avs3a/ffmpeg/include/FilterEngine/  -static'  \
+          --pkg-config-flags="--static" \
+           --prefix=/d/avs3a/ffmpeg/bin
+
+          make -j$(nproc)
+          make install
+
+      - name: List output
+        run: |
+          echo "Listing $HOME/bin:"
+          ls -lh $HOME/bin
+          file $HOME/bin/ffmpeg.exe || echo "ffmpeg.exe not found"
+
+      - name: Copy ffmpeg.exe to workspace
+        run: |
+          cp $HOME/bin/ffmpeg.exe $GITHUB_WORKSPACE/ffmpeg.exe
+
+      - name: Upload ffmpeg.exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-windows
+          path: ffmpeg.exe
+
+
+
+
+
+          
