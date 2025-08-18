@@ -37,7 +37,7 @@ jobs:
           # git clone https://github.com/WoKee/ffmpeg-av3a.git ffmpeg
           git clone https://github.com/nicaicaii/ffmpeg-6.1.git ffmpeg
           cd ffmpeg
-          git checkout main
+          git checkout master
 
       - name: Configure and build FFmpeg (static .exe)
         run: |
