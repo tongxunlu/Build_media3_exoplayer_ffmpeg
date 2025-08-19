@@ -1,0 +1,84 @@
+name: 20250819-Build FFmpeg with AV3A (Simplified)
+
+on:
+  workflow_dispatch:
+    inputs:
+      av3a_version:
+        description: 'AV3A library version (e.g. v1.0)'
+        required: true
+
+jobs:
+  build-ffmpeg:
+    runs-on: windows-latest
+    
+    steps:
+      - name: 📥 Checkout FFmpeg
+        uses: actions/checkout@v4
+        with:
+          repository: nicaicaii/ffmpeg-6.1
+          path: ffmpeg
+
+      - name: 📦 Setup AV3A libraries
+        run: |
+          # 创建标准目录结构
+          mkdir -p ffmpeg/av3a/{include,lib/pkgconfig}
+          
+          # 这里应该是从你的存储库获取预编译库文件
+          # 示例：通过curl下载预编译的AV3A库
+          curl -L https://github.com/tongxunlu/avs3a/releases/download/v1.1/av3ad-v1.1-win64.zip -o av3a.zip
+          7z x av3a.zip -o ffmpeg/av3a/
+          
+          # 验证文件存在
+          ls -R ffmpeg/av3a/
+
+      - name: 🛠️ Setup MSYS2 environment
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            base-devel
+            git
+            make
+            pkg-config
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-gnutls
+
+      - name: 🔨 Build FFmpeg
+        shell: msys2 {0}
+        run: |
+          cd ffmpeg
+          ./configure \
+            --extra-cflags="-I./av3a/include" \
+            --extra-ldflags="-L./av3a/lib -lavs3a --static" \
+            --enable-libarcdav3a \
+            --enable-libuavs3d \
+            --enable-static \
+            --disable-shared \
+            --enable-gpl \
+            --enable-nonfree \
+            --disable-ffplay \
+            --disable-ffprobe \
+            --pkg-config-flags="--static"
+          
+          make -j$(nproc)
+          make install
+
+      - name: 📤 Package and Upload
+        run: |
+          # 复制到工作目录
+          cp /usr/local/bin/ffmpeg.exe .
+          
+          # 创建包含所有依赖的完整包
+          7z a -tzip ffmpeg-av3a-${{ github.event.inputs.av3a_version }}-windows.zip \
+            ffmpeg.exe \
+            ffmpeg/av3a/lib/*.lib
+            
+        shell: bash
+
+      - name: ⬆️ Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-av3a-${{ github.event.inputs.av3a_version }}-windows
+          path: |
+            ffmpeg.exe
+            ffmpeg-av3a-*.zip
