@@ -20,35 +20,20 @@ jobs:
 
       - name: 📦 Setup AV3A libraries
         run: |          
-          @echo off
+          shell: cmd
+            run: |
               :: 创建目录结构
-              if not exist "ffmpeg\av3a" mkdir ffmpeg\av3a
-              if not exist "ffmpeg\av3a\include" mkdir ffmpeg\av3a\include
-              if not exist "ffmpeg\av3a\lib" mkdir ffmpeg\av3a\lib
-              if not exist "ffmpeg\av3a\lib\pkgconfig" mkdir ffmpeg\av3a\lib\pkgconfig
+              mkdir ffmpeg\av3a
+              mkdir ffmpeg\av3a\include
+              mkdir ffmpeg\av3a\lib
+              mkdir ffmpeg\av3a\lib\pkgconfig
           
-          
-              :: 下载预编译库（示例URL）
+              :: 下载和解压（关键修正点）
               curl -L https://github.com/tongxunlu/avs3a/releases/download/v1.1/av3ad-v1.1-win64.zip -o av3a.zip
-              if not exist av3a.zip (
-                  echo Failed to download AV3A library
-                  exit /b 1
-              )
+              7z x av3a.zip -o ffmpeg\av3a
           
-          
-              :: 解压文件
-              7z x av3a.zip -offmpeg\av3a\
-              if errorlevel 1 (
-                  echo Failed to extract AV3A library
-                  exit /b 1
-              )
-          
-          
-              :: 验证文件
-              dir /s ffmpeg\av3a\include
-              dir /s ffmpeg\av3a\lib
-
-
+              :: 验证
+              dir /s ffmpeg\av3a
 
           
 
