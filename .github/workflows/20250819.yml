@@ -19,17 +19,38 @@ jobs:
           path: ffmpeg
 
       - name: 📦 Setup AV3A libraries
-        run: |
-          # 创建标准目录结构
-          mkdir -p ffmpeg/av3a/{include,lib/pkgconfig}
+        run: |          
+          @echo off
+              :: 创建目录结构
+              if not exist "ffmpeg\av3a" mkdir ffmpeg\av3a
+              if not exist "ffmpeg\av3a\include" mkdir ffmpeg\av3a\include
+              if not exist "ffmpeg\av3a\lib" mkdir ffmpeg\av3a\lib
+              if not exist "ffmpeg\av3a\lib\pkgconfig" mkdir ffmpeg\av3a\lib\pkgconfig
           
-          # 这里应该是从你的存储库获取预编译库文件
-          # 示例：通过curl下载预编译的AV3A库
-          curl -L https://github.com/tongxunlu/avs3a/releases/download/v1.1/av3ad-v1.1-win64.zip -o av3a.zip
-          7z x av3a.zip -o ffmpeg/av3a/
           
-          # 验证文件存在
-          ls -R ffmpeg/av3a/
+              :: 下载预编译库（示例URL）
+              curl -L https://github.com/tongxunlu/avs3a/releases/download/v1.1/av3ad-v1.1-win64.zip -o av3a.zip
+              if not exist av3a.zip (
+                  echo Failed to download AV3A library
+                  exit /b 1
+              )
+          
+          
+              :: 解压文件
+              7z x av3a.zip -offmpeg\av3a\
+              if errorlevel 1 (
+                  echo Failed to extract AV3A library
+                  exit /b 1
+              )
+          
+          
+              :: 验证文件
+              dir /s ffmpeg\av3a\include
+              dir /s ffmpeg\av3a\lib
+
+
+
+          
 
       - name: 🛠️ Setup MSYS2 environment
         uses: msys2/setup-msys2@v2
